@@ -73,15 +73,26 @@ export function addToPool(questions: Question[]) {
 }
 
 /**
- * What the pool still needs, or null when it's full. A partial batch is topped up in the
- * same section, so the questions she opens with are a coherent set rather than a
+ * Enough to open a test with. A batch can come back short when the screening drops a
+ * question that collided with the running test, and chasing that last one costs a whole
+ * extra request — measured at 7.3s and a full 55k-token cache read to fetch a single
+ * question. Opening with four instead of five is not worth that, so anything at or above
+ * this counts as ready.
+ */
+const POOL_READY = POOL_SIZE - 2
+
+/**
+ * What the pool still needs, or null once it has enough. A partial batch is topped up in
+ * the same section, so the questions she opens with are a coherent set rather than a
  * leftover mix.
  */
 export function poolNeeds(): { section: Section; count: number } | null {
   const pool = read()
-  const short = POOL_SIZE - pool.length
-  if (short <= 0) return null
-  return { section: pool[0]?.section ?? nextSection(), count: Math.min(BATCH_SIZE, short) }
+  if (pool.length >= POOL_READY) return null
+  return {
+    section: pool[0]?.section ?? nextSection(),
+    count: Math.min(BATCH_SIZE, POOL_SIZE - pool.length),
+  }
 }
 
 /**

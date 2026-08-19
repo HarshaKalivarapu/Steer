@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { findRepeatsOf } from '@/lib/dedup'
-import { POOL_SIZE, addToPool, getPool, poolNeeds, poolPrompts, poolSignIds } from '@/lib/pool'
+import { addToPool, getPool, poolNeeds, poolPrompts, poolSignIds } from '@/lib/pool'
 import { listExams, recentPrompts, recentSignIds } from '@/lib/storage'
 import type { Question } from '@/lib/types'
 
@@ -52,7 +52,8 @@ export default function PoolWarmer() {
       if (size < lastSize.current) barren.current = 0
       lastSize.current = size
 
-      if (size >= POOL_SIZE || barren.current >= MAX_BARREN_ATTEMPTS) return
+      if (barren.current >= MAX_BARREN_ATTEMPTS) return
+      // poolNeeds() owns the "is it full enough" decision, so there is one threshold.
       const need = poolNeeds()
       if (!need) return
 
