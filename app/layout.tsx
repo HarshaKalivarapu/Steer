@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Overpass } from 'next/font/google'
 import Nav from '@/components/Nav'
+import PoolWarmer from '@/components/PoolWarmer'
 import './globals.css'
 
 /*
@@ -40,6 +41,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={overpass.variable}>
       <body>
         <Nav />
+        {/* Keeps the next test's opening questions ready. Renders nothing. */}
+        <PoolWarmer />
         <main className="mx-auto w-full max-w-3xl px-4 pt-8 pb-16 sm:px-6 sm:pt-10">{children}</main>
       </body>
     </html>

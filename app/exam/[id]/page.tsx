@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import QuestionCard from '@/components/QuestionCard'
 import ScoreSummary from '@/components/ScoreSummary'
+import { poolPrompts, poolSignIds } from '@/lib/pool'
 import { appendQuestions, getExam, recordAnswer, setCurrentIndex } from '@/lib/storage'
 import {
   EXAM_SIZE,
@@ -58,8 +59,13 @@ export default function ExamPage() {
         section: next.section,
         count: next.count,
         examId: exam.id,
-        avoid: used.filter((q) => q.signId === 'none').map((q) => q.prompt),
-        avoidSigns: used.filter((q) => q.signId !== 'none').map((q) => q.signId),
+        // Includes the pool: those questions are already earmarked for the next test,
+        // so generating one of them again here would repeat it back to back.
+        avoid: [...used.filter((q) => q.signId === 'none').map((q) => q.prompt), ...poolPrompts()],
+        avoidSigns: [
+          ...used.filter((q) => q.signId !== 'none').map((q) => q.signId),
+          ...poolSignIds(),
+        ],
       }),
     })
       .then(async (res) => {

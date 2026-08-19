@@ -46,6 +46,29 @@ attempts, so a persistent error can't quietly spend money in the background.
 deploy somewhere with a longer limit, but the batch size is what actually keeps requests
 short.
 
+### The ready pool
+
+Waiting half a minute for a button is the worst part of the app, so ten questions are
+kept generated ahead of time in `lib/pool.ts` (localStorage, five per section). Pressing
+Start hands those straight over and the test opens with no wait at all.
+
+The moment the pool is drained, `components/PoolWarmer.tsx` refills it — in parallel with
+the batches the running test is fetching. So during a test there are two things in
+flight: the next five questions for *this* test, and the opening questions for the *next*
+one.
+
+This is not extra spend. Those ten questions are the next test's first ten, generated
+early rather than on demand; only the final prefetch, the one never used, is wasted.
+Only the very first run ever waits.
+
+**Both directions of deduplication matter here.** The pool excludes the test in progress,
+and the test excludes the pool — otherwise a question sitting in the pool could be
+generated again for the current test and turn up twice in a row. Because the two fetch
+concurrently, each one's exclusion list is a snapshot that may already be stale, so
+there is a second check after the response lands: the pool drops anything that collided
+with the test, and the home page re-checks the pool against recent tests before using it.
+The pool always yields, never the test she is answering.
+
 ### Sign images
 
 Signs are drawn as inline SVG in `lib/signs.ts`. To replace a drawing with a real image,
