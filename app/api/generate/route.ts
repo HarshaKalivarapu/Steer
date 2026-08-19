@@ -154,10 +154,18 @@ async function generateSection(
   const { questions } = JSON.parse(text.text) as { questions: Omit<Question, 'id'>[] }
   // The model is told which half to write, but the section field is what the app
   // scores on, so pin it rather than trusting it.
-  return questions.map((q) => ({ ...q, section }))
+  return {
+    questions: questions.map((q) => ({ ...q, section })),
+    usage: {
+      cacheWrite: message.usage.cache_creation_input_tokens ?? 0,
+      cacheRead: message.usage.cache_read_input_tokens ?? 0,
+      out: message.usage.output_tokens,
+    },
+  }
 }
 
 export async function POST(request: Request) {
+  const started = Date.now()
   let section: Section = 'signs'
   let count = BATCH_SIZE
   let avoid: string[] = []
@@ -193,11 +201,15 @@ export async function POST(request: Request) {
     let lastError: Error | undefined
     let exclusions = avoid
 
-    // Two attempts. A rejected batch is usually rejected for a repeat or two, and
-    // naming them in the exclusion list is normally enough. A batch takes about 27
-    // seconds, so a second attempt still fits inside the 60-second function limit —
-    // a third would not.
-    for (let attempt = 0; attempt < 2; attempt++) {
+    /*
+      A retry is only worth starting if there is time left for it to finish. Each
+      attempt runs 30-40 seconds and the function is capped at 60, so retrying at
+      the 35-second mark just guarantees a timeout instead of returning the error.
+    */
+    const deadlineMs = (maxDuration - 8) * 1000
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const attemptStarted = Date.now()
       const batch = await generateSection(
         client,
         section,
@@ -206,7 +218,8 @@ export async function POST(request: Request) {
         exclusions,
         avoidSigns,
       )
-      const questions: Question[] = batch.map((q, i) => ({
+      const took = Date.now() - attemptStarted
+      const questions: Question[] = batch.questions.map((q, i) => ({
         ...q,
         id: `${examId}-${section}-${Date.now()}-${i}`,
       }))
@@ -215,16 +228,30 @@ export async function POST(request: Request) {
         validate(questions, section, count, avoid, avoidSigns)
       } catch (e) {
         lastError = e instanceof Error ? e : new Error(String(e))
+        const elapsed = Date.now() - started
+        const room = elapsed + took < deadlineMs
+        console.log(
+          `[generate] ${section} x${count} attempt ${attempt} REJECTED in ${took}ms ` +
+            `(${elapsed}ms elapsed) — ${lastError.message}` +
+            (attempt < 2 && !room ? ' — no time to retry' : ''),
+        )
+        if (!room) break
         exclusions = [...exclusions, ...questions.map((q) => q.prompt)]
         continue
       }
 
+      const { cacheWrite, cacheRead, out } = batch.usage
+      console.log(
+        `[generate] ${section} x${count} attempt ${attempt} ok in ${took}ms ` +
+          `(total ${Date.now() - started}ms) — cache write ${cacheWrite}, read ${cacheRead}, out ${out}`,
+      )
       return NextResponse.json({ questions })
     }
 
     throw lastError ?? new Error('Could not produce a valid batch.')
   } catch (e) {
     const detail = e instanceof Error ? e.message : 'Unknown error'
+    console.log(`[generate] ${section} x${count} FAILED after ${Date.now() - started}ms — ${detail}`)
     return new NextResponse(`Could not generate questions. ${detail}`, { status: 500 })
   }
 }

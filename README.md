@@ -67,6 +67,19 @@ If you ever swap in a booklet that is a *scan* with no text layer, the script sa
 `docs/` keeps both manuals. Only the one matching `SOURCE_HINT` in
 `scripts/extract-booklet.py` is used; the other is reference.
 
+The script does three things beyond reading text, all of them documented in place:
+
+- **Drops sections 12-13** (buying a licence, BMV admin). Nothing there is examinable, and
+  the booklet is the largest input on every request, so pages that can't produce a
+  question are paid for on every cache miss. Worth ~2,200 words.
+- **Patches the speed-limit table back in.** The PDF renders its mph values as artwork
+  rather than text, so extraction returns the road types with every number missing —
+  and speed limits are heavily examined. The values are hard-coded from a manual read of
+  page 12. If the booklet is replaced, re-read that page and check them.
+- **Warns about the sign captions.** On the sign pages the captions sit in columns and
+  extract across the rows, so consecutive fragments belong to different signs. A note at
+  the top of `booklet.md` tells the model not to join them into sentences.
+
 Model is set in `app/api/generate/route.ts`. `claude-sonnet-5` would cut per-test cost to
 roughly half if the question quality holds up.
 
@@ -88,6 +101,28 @@ on the same rule written in completely different words — measured, documented 
 of `lib/dedup.ts`, and asserted as a known blind spot in the tests. Run `npm test` after
 touching the threshold; the test pairs are real ones from the seed bank.
 
+## Design
+
+The look is borrowed from road signage rather than decorated with it — flat colour
+fields, no gradients, small radii, and the rule that every colour means something.
+Signage is already minimal and strictly semantic because it has to be read at speed.
+
+The ground is a warm bone, deliberately low-saturation: the sign artwork in a question is
+bright red and yellow, so a muted page makes the sign the loudest thing on screen, which
+is right, because the sign *is* the question.
+
+Camel is the only structural accent — progress bar, active states, the rule under the
+wordmark. Two colours are reserved for answers and appear nowhere else: a bottle green
+and an oxblood. They differ by luminance as well as hue (2.15:1), since red and green are
+exactly the pair some people cannot separate, and every use is paired with a text label
+so colour is never the only signal.
+
+Type is **Overpass**, drawn from the FHWA typefaces used on US highway signs. Counts and
+scores use tabular figures so they don't jitter as they change.
+
+Every colour pair in `app/globals.css` was checked against WCAG AA. Several pass by a
+small margin — re-check rather than trusting your eye if you change one.
+
 ## Adding questions
 
 Open [docs/EXAMPLE_QUESTIONS.md](docs/EXAMPLE_QUESTIONS.md) and paste yours in using the
@@ -99,6 +134,25 @@ in the prompt. A question written from scratch to fill a gap pulls generated tes
 from what the real exam looks like rather than toward it.
 
 The bank is currently short on `signs` questions, and every test needs 20 of them.
+
+## On a phone
+
+This is used on a phone more than a laptop, so the layout is mobile-first: every phone
+width (375-430px) gets the base styles, and `sm:` only kicks in at 640px for tablets and
+desktop. Things worth keeping intact if you edit the UI:
+
+- **Answer options wrap.** The "Correct" / "You chose" label drops to its own line rather
+  than squeezing the answer text into a narrow column. That label is also the
+  colour-blind safeguard, so it must never be hidden to save space.
+- **Root font size** eases from 18px to 17px below 400px, which buys horizontal room
+  without making the text small for an adult learner.
+- **Tap targets** are at least ~44px. Nav links use `-my-2 py-2` to grow their hit area
+  without changing how the bar looks.
+- **Safe areas** are padded via `env(safe-area-inset-*)`, and the viewport uses
+  `viewport-fit=cover`, so nothing sits under an iPhone's rounded corners or home
+  indicator.
+- **Pinch-zoom is deliberately left enabled.** Blocking it on a study app would be a bad
+  trade for a small gain in polish.
 
 ## Scoring
 

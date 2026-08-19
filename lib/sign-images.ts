@@ -9,7 +9,7 @@ export const SIGN_IMAGES: Record<string, string> = {
   "do-not-enter": "/signs/do-not-enter.jpg",
   "handicap-parking": "/signs/handicap-parking.png",
   "hospital": "/signs/hospital.jpg",
-  "lane-ends": "/signs/lane-ends.gif",
+  "lane-ends": "/signs/lane-ends.png",
   "merge": "/signs/merge.png",
   "no-bicycles": "/signs/no-bicycles.gif",
   "no-passing-pennant": "/signs/no-passing-pennant.jpg",

@@ -12,7 +12,8 @@
     "signs": "tsx scripts/build-sign-manifest.mts",
     "predev": "npm run signs",
     "prebuild": "npm run signs",
-    "extract:ocr": "tsx scripts/extract-booklet.mts"
+    "extract:ocr": "tsx scripts/extract-booklet.mts",
+    "check": "node scripts/check-build.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.117.1",

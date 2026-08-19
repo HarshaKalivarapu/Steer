@@ -1,5 +1,11 @@
 # oh.car.en (1)
 
+> Note on this transcription: on the pages describing traffic signs, the short
+> ALL-CAPS captions beneath each sign image are laid out in columns, and this text was
+> read across the rows. Consecutive capitalised fragments therefore belong to *different*
+> signs and do not form continuous sentences. Do not infer a sign's meaning by joining
+> them together.
+
 <!-- page 1 -->
 
 
@@ -116,11 +122,9 @@ SECTION 11: TAKING THE DRIVING TEST
 Maneuverability and On-Road
 Skills Testing ........................................................42
 Abbreviated Adult Driver Training Course .....44
-SECTION 12: PURCHASE YOUR DRIVER LICENSE
 Purchasing Your Driver License .......................45
 Renewing Your Driver License .........................47
 Driver License Classes .......................................47
-SECTION 13: WHAT ELSE SHOULD I KNOW?
 New Ohio Residents ...........................................50
 Save Our Sight Fund ..........................................50
 Organ Donor Registry/Second Chance
@@ -510,17 +514,17 @@ Regardless of the posted speed limit, Ohio law prohibits a person from driving a
 a speed greater than what allows the driver to stop in the distance available.
 Generally, speed limits are based on the type of road (two-lane, divided highways, etc.), and the road’s
 location as described in the examples below.
-SPEED
-LIMIT ROAD LOCATION / ROAD TYPE
-Alleys within a municipal corporation
-School Zones during recess and while children are arriving or
-leaving school during normal hours of operation
-Streets within a municipal corporation
-State routes or through highways, except controlled-access
-highways within municipal corporations outside business districts
-State routes within municipal corporations outside urban districts
-Freeways with paved shoulders inside municipal corporations
-Rural freeways
+SPEED LIMITS BY ROAD LOCATION / ROAD TYPE
+
+| Speed limit | Road location / road type |
+| --- | --- |
+| 15 mph | Alleys within a municipal corporation |
+| 20 mph | School zones during recess and while children are arriving or leaving school during normal hours of operation |
+| 25 mph | Streets within a municipal corporation |
+| 35 mph | State routes or through highways, except controlled-access highways, within municipal corporations outside business districts |
+| 50 mph | State routes within municipal corporations outside urban districts |
+| 55 mph | Freeways with paved shoulders inside municipal corporations |
+| 70 mph | Rural freeways |
 9
 OHIO DRIVER MANUAL
 SECTION 4: Rules of the Road IN SECTION 4:
@@ -1944,295 +1948,3 @@ P.O. BOX 16521
 COLUMBUS, OHIO 43216
 The license or TIPIC will be canceled, and the cosigner will be relieved from the
 liability imposed by ORC 4507.07(B).
-IN SECTION 12:
-• PURCHASING YOUR DRIVER
-LICENSE
-• RENEWING YOUR DRIVER
-LICENSE
-• DRIVER LICENSE CLASSES
-SECTION 12: Purchase Your Driver License
-
-<!-- page 49 -->
-
-46
-Driver License: Compliant vs. Standard
-Ohioans have the option to choose between a Compliant Driver License and a Standard Driver License
-card. Choose the type of card that works best for you:
-COMPLIANT CARD STANDARD CARD
-Meets national travel security
-requirements. A federally-compliant form
-of identification will be required to fly
-commercially or to access federal facilities
-or military bases.
-Obtaining a Compliant card requires more
-identity documents than the Standard
-card. You must provide documents to
-prove:
-• Full legal name
-• Date of birth
-• Social Security number
-• Ohio street address — two documents
-• Citizenship or legal presence in the
-United States
-Does not meet national travel security
-requirements. A Standard Card will
-need to be used in conjunction with a
-passport or other acceptable documents
-approved by the Transportation Security
-Administration (TSA) in order to fly
-commercially or to access a federal facility
-or military base. Please see www.tsa.gov/
-travel/security-screening/identification for
-more information.
-The Standard card does not require
-additional identity documents, unless the
-Driver License or ID card is being issued
-for the first time.
-You will receive your new Driver License or ID card by mail.
-Proof of Identity – Acceptable Documents List
-Applicants for a TIPIC, any type of Driver License, or state ID card must first provide acceptable
-documentation for proof of identity that includes the following five elements:
-• Full Legal Name
-• Date of Birth
-• Social Security number
-• Ohio Street Address (Compliant card requires two documents proving address)
-• Citizenship or Legal Presence in the United States
-Visit the BMV website to view the Compliant and Standard Acceptable Documents Lists.
-OHIO DRIVER MANUAL
-SECTION 12: Purchase Your Driver License
-
-<!-- page 50 -->
-
-47
-During the first 12 months
-of holding a Driver License:
-• The driver may not operate a vehicle from
-midnight to 6 a.m., unless:
-– Accompanied by a parent or guardian,
-– Driving to or from work, with documentation
-from the employer (Form BMV 2825),
-– Driving to or from an official school-
-sponsored event or a religious event, with
-appropriate documentation from the event
-official (Form BMV 2826).
-• The driver and all passengers must wear
-safety belts. The number of occupants cannot
-exceed the number of safety belts originally
-installed.
-• The driver may not use any devices, including
-phones, while operating a vehicle.
-• A conviction of a traffic offense within the
-first months of having a license may result
-in a parent or legal guardian required to
-accompany the driver for six months, or until
-the driver reaches age 17.
-• The driver may not operate a vehicle with
-more than one non-family member as a
-passenger, unless accompanied by a parent or
-guardian.
-After the first 12 months
-of holding a Driver License:
-• The driver may not operate a vehicle from
-1 a.m. to 5 a.m., unless:
-– Accompanied by a parent or guardian,
-– Driving to or from work, with documentation
-from the employer (Form BMV 2825),
-– Driving to or from an official school-
-sponsored event or a religious event, with
-appropriate documentation from the event
-official (Form BMV 2826).
-• The driver and all passengers must wear
-safety belts. The number of occupants cannot
-exceed the number of safety belts originally
-installed.
-• The driver may not use any devices, including
-phones, while operating a vehicle.
-• Multiple traffic convictions before the driver
-reaches age 18 may result in a 90-day license
-suspension.
-• For alcohol-related convictions, the Driver
-License will be suspended for at least six
-months according to ORC 4511.19.
-New drivers under age 18 have these restrictions:
-RENEWING YOUR DRIVER LICENSE
-It is your responsibility to know when your license expires. Ohio offers online Driver License renewal
-through BMV Online Services to qualified applicants. All applicants are eligible to renew their Driver
-License in person at any Deputy Registrar License Agency .
-If you are under age 21, your Ohio Driver License expires on your 21st birthday and must be renewed in
-person.
-You can renew your license up to 30 days before your 21st birthday. Qualified applicants who are age 21
-or older but not yet age 65, have the option to purchase an 8-year license, otherwise, a 4-year license is
-issued.
-There is no grace period for renewing your license. If you continue to drive after your license has expired,
-you risk a traffic citation.
-DRIVER LICENSE CLASSES
-Class D Operator’s License
-A Class D operator’s license allows an individual, including a probationary driver under the age of 18,
-to operate a motor vehicle that does not require a Commercial Driver License (CDL) or an additional
-endorsement.
-OHIO DRIVER MANUAL
-SECTION 12: Purchase Your Driver License
-
-<!-- page 51 -->
-
-48
-Commercial Driver License (CDL)
-A CDL is required for operators of vehicles described in the classes below, unless the operator qualifies
-for an exemption.
-Class A – Any combination of vehicles with a combined gross vehicle weight rating of 26,001 pounds
-or more, if the gross vehicle weight rating of the vehicle or vehicles being towed is in excess of 10,000
-pounds.
-Class B – Any single vehicle with a gross vehicle weight rating of 26,001 pounds or more or any such
-vehicle towing a vehicle having a gross vehicle weight rating not in excess of 10,000 pounds.
-Class C – Any single vehicle or combination of vehicles not considered Class A or Class B and any one or
-more of the following:
-• Designed to transport 16 or more passengers, including the driver.
-• Transporting hazardous materials in an amount requiring placarding.
-• Any school bus with a gross vehicle weight rating of less than 26,001 pounds and designed to
-transport fewer than 16 passengers, including the driver.
-For more information on a Commercial Driver License, please see the
-Ohio Commercial Driver License Manual.
-Motorcycle, Motor Scooter, or Moped License or Endorsement
-Mopeds — Individuals age 14 or older can apply for a moped license. A moped license is not needed if a
-Driver License has already been issued.
-• Applicants must meet vision standards and pass the knowledge and skills tests to obtain a moped
-license.
-• The moped skills test uses the first two parts of the two-wheel motorcycle skills test (1 - Cone Weave,
-Normal Stop and 2 - Turning from a Stop, U-turn). Refer to the Motorcycle Operator Manual for testing
-information and diagrams.
-• Probationary moped license holders ages 14-15 are limited to daylight driving only.
-A moped or motorized bicycle requires a moped license or a Class D license to operate,
-and is identified by these characteristics:
-• Two tandem wheels, or one wheel in the front and two wheels in the rear
-• Capable of being pedaled
-• Equipped with a helper motor
-– not more than 50 cc
-– produces no more than one brake horsepower
-– capable of propelling the vehicle no greater than 20 mph on a level surface
-OHIO DRIVER MANUAL
-SECTION 12: Purchase Your Driver License
-
-<!-- page 52 -->
-
-49
-Motorcycles and Motor Scooters — Any person operating a motorcycle (to include 2-wheeled,
-3-wheeled, and cab-enclosed cycles) or motor scooter on public roadways in Ohio must hold a valid mo-
-torcycle/scooter license or endorsement. A rider may apply for a motorcycle-only license or add a motor-
-cycle endorsement to a valid Ohio Driver License.
-• A two-wheeled motorcycle endorsement or license holder may operate a two- or three-wheeled
-motorcycle and a scooter.
-• A three-wheeled motorcycle endorsement or license holder is restricted to the operation of a three-
-wheeled motorcycle.
-• A motor scooter endorsement or license holder is restricted to the operation of a motor scooter.
-A motor scooter or motor-driven scooter requires a motor scooter or motorcycle license or
-endorsement to operate, and has these characteristics:
-• Designed to travel on not more than three wheels in contact with the ground
-• A seat for the driver and floor pad for the driver’s feet
-• Equipped with a motor between 50 cc and 100 cc that:
-– produces no more than five brake horsepower
-– is capable of propelling the vehicle at a speed greater than 20 mph on a level surface
-A motorcycle requires a motorcycle license or endorsement to operate, and has these
-characteristics:
-• Motor vehicle with motive power
-• A seat or saddle for the use of the operator
-• Designed to travel on not more than three wheels in contact with the ground
-• No occupant compartment top or an occupant compartment top that can be installed
-or removed by the user
-Motorcycle Ohio Program — The Ohio Department of Public Safety’s Motorcycle Ohio program offers
-motorcycle safety and education courses at locations across the state. The Motorcycle Ohio program
-is required for individuals under age 18 before they can apply for a motorcycle operator’s endorsement
-and/or license. In addition, individuals under age 18 still must meet probationary driver license
-requirements before receiving a motorcycle endorsement.
-For more information on operating a motorcycle in Ohio visit
-and view the Motorcycle Operator Manual.
-OHIO DRIVER MANUAL
-SECTION 12: Purchase Your Driver License
-
-<!-- page 53 -->
-
-50
-OHIO DRIVER MANUAL
-NEW OHIO RESIDENTS - WELCOME TO OHIO!
-In Ohio, once you are employed, sign a lease, buy a home, or enroll children in
-school, you are a resident.
-• Within 30 days of establishing residency, Ohio drivers must have an Ohio-
-issued Driver License.
-• If you own a vehicle, it must have an Ohio-issued certificate of title and
-registration. Upon registering a vehicle, Ohio-issued license plates and a
-registration sticker are provided.
-For detailed information, visit the New Ohio Residents page of the BMV website.
-SAVE OUR SIGHT FUND
-When Ohioans apply for or renew their vehicle registration, they are asked if they want to contribute $1
-to the Save Our Sight fund.
-The purpose of the Save Our Sight Program is to ensure that children in Ohio have good vision and
-healthy eyes. This is accomplished through an established grant process. Recipients of the grant provide
-vision services in all counties of the state.
-ORGAN DONOR REGISTRY AND THE SECOND CHANCE TRUST FUND
-Ohio law allows TIPIC, Driver License, ID card, and vehicle registration applicants to voluntarily register
-as an organ, eye, and tissue donors in the Ohio Donor Registry. At the time of issuance, Ohioans are
-asked if they want to be a registered organ, eye, and tissue donor. When an Ohio credential is issued, the
-term “ORGAN DONOR” is printed on the card. You also may enroll online at the Donate Life Ohio website
-or through BMV Online Services .
-A voluntary donation to Ohio’s Second Chance Trust Fund supports education of organ, eye, and tissue
-donation.
-VOTER REGISTRATION
-All Driver License and ID card applicants who qualify are asked if they would like to register to vote or
-change their voter status. Voter status can be changed at any Deputy Registrar License Agency by filling
-out a Voter Registration/Change of Address Form. The Deputy Registrar will send completed voter forms
-to the County Board of Elections.
-ID R KIDS
-Ohio photo ID cards for children assist authorities in the event that a child becomes lost or is reported
-missing. An Ohio ID card is used for identification purposes only, and cannot be used for anything else,
-including driving privileges.
-You may apply for an Ohio ID card for your child at any Deputy Registrar License Agency and provide
-identity documents from the Acceptable Documents List . Visit the BMV website for more information
-about the ID R Kids campaign .
-IN SECTION 13:
-• NEW OHIO RESIDENTS
-• SAVE OUR SIGHT FUND
-• ORGAN DONOR REGISTRY/
-SECOND CHANCE TRUST FUND
-• VOTER REGISTRATION
-• ID R KIDS
-• NEXT OF KIN – EMERGENCY
-CONTACT INFORMATION
-• LIVING WILL DESIGNATION
-• ARMED FORCES DESIGNATION
-SECTION 13: What Else Should I Know?
-
-<!-- page 54 -->
-
-51
-NEXT OF KIN – EMERGENCY CONTACT INFORMATION
-Through the Next of Kin Emergency Contact Information program, Ohioans can identify up to two
-emergency contacts for law enforcement to notify when an accident or emergency leaves the person
-unable to communicate with law enforcement or emergency medical responders. Parents of children
-who have an Ohio ID card may add contact information to their child’s record for use in the event the
-child becomes lost or is reported missing.
-Add emergency contact information to your driver record or identification card record:
-• Online: BMV Online Services
-• In Person: At any Deputy Registrar License Agency
-• By Mail: BMV Verification Services
- Document Management
- P.O. Box 16520
- Columbus, OH 43216-6520
-LIVING WILL DESIGNATION
-Ohio Driver License and ID card applicants are asked if they want their Driver License or
-ID card to indicate that they have executed a valid power of attorney for health care or
-a declaration for the use of life-sustaining equipment. The indication will display on the
-back of the Driver License or ID card.
-ARMED FORCES DESIGNATION
-Any veteran, active duty, or reservist of the Armed Forces of the United States may have the ‘ARMED
-FORCES’ designation display on the Ohio Driver License or ID card.
-Applicants may visit any Deputy Registrar License Agency and present their Ohio Driver License or ID
-card and one of the following:
-• DD214
-• Active or Retired Military ID Card
-• Veteran Identification Card
-• Copy of current orders
-OHIO DRIVER MANUAL
-SECTION 13: What Else Should I Know?
-
-<!-- page 55 -->
-
-HSY 7607 10/25

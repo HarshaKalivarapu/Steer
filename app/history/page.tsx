@@ -29,17 +29,17 @@ export default function HistoryPage() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-3xl font-semibold tracking-tight">Past Tests</h1>
-        <p className="mt-2 text-muted">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Past tests</h1>
+        <p className="mt-2 text-balance text-muted">
           Every test you&apos;ve taken, saved on this device. Open one to read back the
           questions and explanations.
         </p>
       </header>
 
       {exams.length === 0 ? (
-        <div className="rounded-xl border border-line bg-card px-6 py-10 text-center">
+        <div className="rounded-sign border border-line bg-card px-6 py-12 text-center">
           <p className="text-muted">No tests yet.</p>
-          <Link href="/" className="mt-3 inline-block font-medium text-brand">
+          <Link href="/" className="mt-3 inline-block font-semibold text-accent-deep hover:underline">
             Generate your first one
           </Link>
         </div>
@@ -51,11 +51,11 @@ export default function HistoryPage() {
             return (
               <li
                 key={exam.id}
-                className="flex items-center justify-between gap-4 rounded-xl border border-line bg-card px-5 py-4"
+                className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-sign border border-line bg-card px-4 py-4 sm:px-5"
               >
-                <Link href={`/exam/${exam.id}`} className="flex-1">
+                <Link href={`/exam/${exam.id}`} className="min-w-0 flex-1">
                   <p className="font-medium">{formatDate(exam.createdAt)}</p>
-                  <p className="text-sm text-muted">
+                  <p className="tnum mt-0.5 text-sm text-muted">
                     {done
                       ? `Signs ${score.signs.correct}/${score.signs.total} · Rules ${score.rules.correct}/${score.rules.total}`
                       : `In progress — ${score.answered} of ${EXAM_SIZE} answered${
@@ -66,8 +66,10 @@ export default function HistoryPage() {
 
                 {done && (
                   <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                      score.passed ? 'bg-right-soft text-right' : 'bg-wrong-soft text-wrong'
+                    className={`rounded-sign px-3 py-1 text-xs font-bold tracking-wide uppercase ${
+                      score.passed
+                        ? 'bg-correct-soft text-correct'
+                        : 'bg-incorrect-soft text-incorrect'
                     }`}
                   >
                     {score.passed ? 'Pass' : 'Fail'}
@@ -80,7 +82,7 @@ export default function HistoryPage() {
                     setExams(listExams())
                   }}
                   aria-label="Delete this test"
-                  className="text-sm text-muted hover:text-wrong"
+                  className="-my-2 py-2 text-sm text-muted transition-colors hover:text-incorrect"
                 >
                   Delete
                 </button>

@@ -46,9 +46,6 @@ export const EXAM_SIZE = SECTION_SIZE * 2
  */
 export const BATCH_SIZE = 5
 
-/** The first two batches run in parallel, one per section, and are what she waits for. */
-export const STARTER_SIZE = BATCH_SIZE * 2
-
 /** True once every question has arrived. */
 export function isComplete(exam: Exam): boolean {
   return exam.questions.length >= EXAM_SIZE

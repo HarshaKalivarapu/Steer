@@ -1,34 +1,113 @@
 @import 'tailwindcss';
 
 /*
-  Sized for comfortable reading, not for density. Base text is 18px and tap
-  targets are generous — this is used by one person who is studying, not
-  skimming a dashboard.
+  Steer's look is borrowed from road signage rather than decorated with it.
+
+  Signage is already minimal, high-contrast, and strictly semantic — red prohibits,
+  green guides — because it has to be read at speed. The grammar transfers: flat colour
+  fields, no gradients, one weight for the thing that matters, and the rule that every
+  colour means something.
+
+  The ground is warm and low-saturation on purpose. The sign artwork in a question is
+  bright red and yellow, so a muted page makes the sign the loudest thing on screen —
+  which is correct, because the sign IS the question.
+
+  Two colours are held in reserve for answers and appear nowhere else: a bottle green and
+  an oxblood. Hue alone is not enough — red and green are exactly the pair some people
+  cannot separate — so the oxblood is deliberately much darker than the green, giving a
+  measured 2.15:1 difference in luminance between them. Every use is also paired with a
+  text label ("Correct", "You chose"), so colour is never the only signal.
+
+  Every combination in this file was checked against WCAG AA. If you change a value,
+  re-check it rather than trusting your eye: several of these pass by a small margin.
 */
 @theme {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: var(--font-overpass), ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: oklch(0.25 0.02 250);
-  --color-muted: oklch(0.52 0.02 250);
-  --color-line: oklch(0.9 0.01 250);
-  --color-paper: oklch(0.99 0.005 250);
-  --color-card: oklch(1 0 0);
+  /* Paper and ink. Warm off-white ground, espresso-black text rather than pure black. */
+  --color-paper: #f0ebe1;
+  --color-card: #fbf9f4;
+  --color-ink: #23201b;
+  --color-muted: #6b6257;
+  --color-line: #d6ccba;
 
-  --color-brand: oklch(0.52 0.16 250);
-  --color-brand-soft: oklch(0.95 0.03 250);
+  /*
+    Camel, the only structural accent: progress, active states, the wordmark rule.
+    `accent` is for fills, where contrast against cream doesn't have to carry text.
+    `accent-deep` is the darker tobacco used when the accent has to BE text.
+  */
+  --color-accent: #a8763e;
+  --color-accent-deep: #7c5326;
+  --color-accent-soft: #ece1cf;
 
-  --color-right: oklch(0.55 0.15 150);
-  --color-right-soft: oklch(0.96 0.04 150);
-  --color-wrong: oklch(0.55 0.19 25);
-  --color-wrong-soft: oklch(0.96 0.04 25);
+  /*
+    Answer feedback, and nothing else on the page is allowed to be this saturated.
+    Named `correct`/`incorrect` rather than right/wrong because Tailwind already owns
+    `text-right` as an alignment utility — a colour called `right` silently loses.
+  */
+  --color-correct: #37705d;
+  --color-correct-soft: #e4ece7;
+  --color-incorrect: #5e1f1f;
+  --color-incorrect-soft: #f1e3e0;
+
+  /* Real signs have a slight radius, not pill shapes. */
+  --radius-sign: 4px;
 }
 
+/*
+  18px suits a laptop and an adult learner reading dense text. On a narrow phone the
+  same size costs horizontal room, so it eases down slightly below 400px — the S24+ and
+  most iPhones sit right around there.
+*/
 html {
-  font-size: 18px;
+  font-size: 17px;
+}
+
+@media (min-width: 400px) {
+  html {
+    font-size: 18px;
+  }
 }
 
 body {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* Keep content clear of rounded corners in landscape. */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/*
+  Long option text and unbroken strings must never widen the page. A phone that scrolls
+  sideways feels broken even when nothing is actually wrong.
+*/
+body,
+h1,
+h2,
+p,
+li,
+button,
+a {
+  overflow-wrap: break-word;
+}
+
+/*
+  Counts and scores are instrumentation — "7 of 40", "15 of 20". Tabular figures keep
+  them from jittering as the numbers change.
+*/
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+/* Signs don't animate. Respect the setting anyway. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -11,8 +11,8 @@ export default function SignsPage() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-3xl font-semibold tracking-tight">Sign artwork</h1>
-        <p className="mt-2 leading-relaxed text-muted">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Sign artwork</h1>
+        <p className="mt-2 leading-relaxed text-balance text-muted">
           Every sign the test can show. To replace a drawing with a real image, drop a
           file into <code className="font-mono text-sm">public/signs/</code> named after
           the id below — <code className="font-mono text-sm">stop.png</code>,{' '}
@@ -21,11 +21,11 @@ export default function SignsPage() {
         </p>
       </header>
 
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         {SIGNS.map((sign) => (
           <li
             key={sign.id}
-            className="flex flex-col items-center gap-3 rounded-xl border border-line bg-card p-4 text-center"
+            className="flex flex-col items-center gap-3 rounded-sign border border-line bg-card p-4 text-center"
           >
             <SignArt id={sign.id} className="h-24 w-24" />
             <div>
@@ -34,9 +34,9 @@ export default function SignsPage() {
               <p
                 className={`mt-1 text-xs ${
                   hasCustomImage(sign.id)
-                    ? 'text-right'
+                    ? 'text-correct'
                     : sign.art === 'rough'
-                      ? 'text-wrong'
+                      ? 'text-incorrect'
                       : 'text-muted'
                 }`}
               >

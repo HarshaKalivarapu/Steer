@@ -83,7 +83,7 @@ export default function ExamPage() {
     return (
       <div className="flex flex-col gap-4 text-center">
         <p className="text-muted">That test could not be found on this device.</p>
-        <Link href="/" className="font-medium text-brand">
+        <Link href="/" className="font-semibold text-accent-deep hover:underline">
           Back to home
         </Link>
       </div>
@@ -101,14 +101,14 @@ export default function ExamPage() {
 
   if (showScore) {
     return (
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-7 sm:gap-8">
         <ScoreSummary exam={exam} />
         <button
           onClick={() => {
             setShowScore(false)
             setExam(setCurrentIndex(exam, 0))
           }}
-          className="text-center font-medium text-brand hover:underline"
+          className="text-center font-semibold text-accent-deep hover:underline"
         >
           Review the questions
         </button>
@@ -117,18 +117,18 @@ export default function ExamPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-7 sm:gap-8">
       <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between text-sm font-medium">
-          <span className="text-right">{score.correct} right</span>
-          <span className="text-muted">
+        <div className="tnum flex items-center justify-between text-sm font-semibold">
+          <span className="text-correct">{score.correct} right</span>
+          <span className="font-normal text-muted">
             {score.answered} of {EXAM_SIZE} answered
           </span>
-          <span className="text-wrong">{score.wrong} wrong</span>
+          <span className="text-incorrect">{score.wrong} wrong</span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-line">
+        <div className="h-1.5 overflow-hidden rounded-sign bg-line">
           <div
-            className="h-full rounded-full bg-brand transition-all"
+            className="h-full bg-accent transition-[width] duration-300"
             style={{ width: `${(score.answered / EXAM_SIZE) * 100}%` }}
           />
         </div>
@@ -142,24 +142,24 @@ export default function ExamPage() {
         onSelect={(letter: Letter) => setExam(recordAnswer(exam, question.id, letter))}
       />
 
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           onClick={() => setExam(setCurrentIndex(exam, index - 1))}
           disabled={index === 0}
-          className="rounded-xl border border-line bg-card px-5 py-3 font-medium disabled:opacity-40"
+          className="rounded-sign border border-line bg-card px-5 py-3 font-medium transition-colors hover:border-accent disabled:opacity-40 disabled:hover:border-line"
         >
           Back
         </button>
 
         {atEndOfLoaded && stillWriting ? (
-          <span className="rounded-xl border border-line bg-card px-5 py-3 text-center text-sm text-muted">
+          <span className="order-last w-full rounded-sign border border-line bg-card px-4 py-3 text-center text-sm text-muted sm:order-none sm:w-auto sm:px-5">
             {restError ? 'Could not load the rest' : 'Writing the next questions…'}
           </span>
         ) : isLast ? (
           <button
             onClick={() => setShowScore(true)}
             disabled={!allAnswered}
-            className="rounded-xl bg-brand px-6 py-3 font-semibold text-white disabled:opacity-40"
+            className="rounded-sign bg-ink px-5 py-3 font-semibold text-paper transition-opacity hover:opacity-90 disabled:opacity-40 sm:px-6"
           >
             See my score
           </button>
@@ -167,7 +167,7 @@ export default function ExamPage() {
           <button
             onClick={() => setExam(setCurrentIndex(exam, index + 1))}
             disabled={!selected}
-            className="rounded-xl bg-brand px-6 py-3 font-semibold text-white disabled:opacity-40"
+            className="rounded-sign bg-ink px-5 py-3 font-semibold text-paper transition-opacity hover:opacity-90 disabled:opacity-40 sm:px-6"
           >
             Next
           </button>
@@ -181,7 +181,7 @@ export default function ExamPage() {
       )}
 
       {restError && (
-        <p className="rounded-lg bg-wrong-soft px-4 py-3 text-center text-sm text-wrong">
+        <p className="rounded-sign border border-incorrect/30 bg-incorrect-soft px-4 py-3 text-center text-sm text-incorrect">
           {restError} Your answers are saved. Reopen this test from Past Tests to try
           again.
         </p>

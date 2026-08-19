@@ -30,6 +30,45 @@ OUT = DOCS / "booklet.md"
 # Which PDF to read. The other files in docs/ are kept for reference but unused.
 SOURCE_HINT = "oh.car.en"
 
+# Everything from this heading to the end of the booklet is dropped. Sections 12 and 13
+# cover buying the licence and general BMV admin — nothing a knowledge test asks about —
+# and the booklet is the single largest input on every request, so carrying pages that
+# can never produce a question is paid for on every cache miss.
+DROP_FROM = re.compile(r"^IN SECTION 12:", re.MULTILINE)
+
+# The contents page still lists the sections that were dropped.
+DROP_CONTENTS = re.compile(r"^SECTION 1[23]:.*\n?", re.MULTILINE)
+
+# The speed-limit table renders its mph values as artwork, not text, so extraction gets
+# the road types and loses every number — and speed limits are heavily examined. The
+# values below were read off the PDF by hand (page 12, SPEED LIMITS - ORC 4511.21) and
+# are patched back in. If the booklet is ever replaced, re-read that page and check them.
+SPEED_TABLE_BROKEN = re.compile(
+    r"^SPEED\nLIMIT ROAD LOCATION / ROAD TYPE\n.*?^Rural freeways$",
+    re.MULTILINE | re.DOTALL,
+)
+
+SPEED_TABLE = """SPEED LIMITS BY ROAD LOCATION / ROAD TYPE
+
+| Speed limit | Road location / road type |
+| --- | --- |
+| 15 mph | Alleys within a municipal corporation |
+| 20 mph | School zones during recess and while children are arriving or leaving school during normal hours of operation |
+| 25 mph | Streets within a municipal corporation |
+| 35 mph | State routes or through highways, except controlled-access highways, within municipal corporations outside business districts |
+| 50 mph | State routes within municipal corporations outside urban districts |
+| 55 mph | Freeways with paved shoulders inside municipal corporations |
+| 70 mph | Rural freeways |"""
+
+# Figure captions on the sign pages sit in several columns, and extraction reads them
+# across rather than down, so consecutive lines belong to different signs.
+CAPTION_WARNING = """> Note on this transcription: on the pages describing traffic signs, the short
+> ALL-CAPS captions beneath each sign image are laid out in columns, and this text was
+> read across the rows. Consecutive capitalised fragments therefore belong to *different*
+> signs and do not form continuous sentences. Do not infer a sign's meaning by joining
+> them together.
+"""
+
 # Glyphs from symbol fonts that pdf extraction leaves in the private-use range.
 PRIVATE_USE_BULLETS = {"", "", "", ""}
 
@@ -105,12 +144,31 @@ def main() -> None:
         )
 
     doc = f"# {chosen.stem}\n\n" + "\n\n".join(pages) + "\n"
+
+    full_words = len(doc.split())
+    cut = DROP_FROM.search(doc)
+    if cut:
+        doc = doc[: cut.start()].rstrip() + "\n"
+    doc = DROP_CONTENTS.sub("", doc)
+
+    doc, speed_patched = SPEED_TABLE_BROKEN.subn(SPEED_TABLE, doc, count=1)
+    doc = f"# {chosen.stem}\n\n{CAPTION_WARNING}\n" + doc.split("\n", 2)[2]
+
     OUT.write_text(doc, encoding="utf-8")
 
     words = len(doc.split())
+    dropped = full_words - words
     print(f"source : {chosen.name}")
     print(f"pages  : {len(reader.pages)} ({empty} without text)")
     print(f"words  : {words:,}  (~{round(words * 1.35 / 1000)}k tokens)")
+    if cut:
+        print(f"dropped: {dropped:,} words from section 12 onward")
+    else:
+        print("dropped: nothing — DROP_FROM did not match, check the heading")
+    if speed_patched:
+        print("patched: speed-limit table restored (its numbers are artwork in the PDF)")
+    else:
+        print("patched: NOTHING — the speed table did not match, so it has no numbers")
     print(f"wrote  : {OUT}")
     print("cost   : $0.00 — read straight from the text layer")
 
