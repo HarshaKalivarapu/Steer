@@ -10,7 +10,7 @@ import { appendQuestions, getExam, recordAnswer, setCurrentIndex } from '@/lib/s
 import {
   EXAM_SIZE,
   isComplete,
-  nextBatch,
+  nextBatches,
   scoreExam,
   type Exam,
   type Letter,
@@ -47,32 +47,36 @@ export default function ExamPage() {
    */
   useEffect(() => {
     if (!exam || isComplete(exam) || fetching.current || failures.current >= 2) return
-    const next = nextBatch(exam)
-    if (!next) return
+    const needed = nextBatches(exam)
+    if (needed.length === 0) return
 
     fetching.current = true
     const used = exam.questions
-    fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        section: next.section,
-        count: next.count,
-        examId: exam.id,
-        // Includes the pool: those questions are already earmarked for the next test,
-        // so generating one of them again here would repeat it back to back.
-        avoid: [...used.filter((q) => q.signId === 'none').map((q) => q.prompt), ...poolPrompts()],
-        avoidSigns: [
-          ...used.filter((q) => q.signId !== 'none').map((q) => q.signId),
-          ...poolSignIds(),
-        ],
-      }),
-    })
-      .then(async (res) => {
+    // Includes the pool: those questions are already earmarked for the next test, so
+    // generating one of them again here would repeat it back to back.
+    const avoid = [...used.filter((q) => q.signId === 'none').map((q) => q.prompt), ...poolPrompts()]
+    const avoidSigns = [
+      ...used.filter((q) => q.signId !== 'none').map((q) => q.signId),
+      ...poolSignIds(),
+    ]
+
+    // Both sections at once. Each is its own short request, so neither risks the
+    // serverless time limit, and together they keep well ahead of her answering.
+    Promise.all(
+      needed.map(async (batch) => {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ ...batch, examId: exam.id, avoid, avoidSigns }),
+        })
         if (!res.ok) throw new Error(await res.text())
-        const { questions } = (await res.json()) as { questions: Question[] }
+        return ((await res.json()) as { questions: Question[] }).questions
+      }),
+    )
+      .then((batches) => {
         setRestError(null)
-        setExam((current) => (current ? appendQuestions(current, questions) : current))
+        failures.current = 0
+        setExam((current) => (current ? appendQuestions(current, batches.flat()) : current))
       })
       .catch((e: unknown) => {
         failures.current += 1

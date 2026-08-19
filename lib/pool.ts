@@ -16,8 +16,8 @@ import { BATCH_SIZE, type Question, type Section } from './types'
  */
 const KEY = 'ohio-permit-pool'
 
-/** One batch per section. Enough to open a test with both halves represented. */
-export const POOL_PER_SECTION = BATCH_SIZE
+/** Fixed at five per section, so shrinking the batch size doesn't shrink the pool. */
+export const POOL_PER_SECTION = 5
 export const POOL_SIZE = POOL_PER_SECTION * 2
 
 function read(): Question[] {

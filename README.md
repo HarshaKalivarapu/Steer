@@ -27,10 +27,19 @@ handing over a broken test.
 
 ### Generated in small batches
 
-Questions arrive five at a time, for two reasons. Vercel caps a serverless function at
-60 seconds on the Hobby tier, and a measured 5-question batch takes about 27 seconds
-against roughly 148 for twenty — so five leaves real headroom rather than a five-second
-margin. It also means she starts answering sooner.
+Questions arrive three at a time. Production timings are close to linear in output
+volume — about 5 seconds of overhead plus 12ms per output token — and Opus's thinking
+tokens count toward output and vary roughly threefold between otherwise identical
+requests. Five-question batches measured 35-55 seconds against Vercel's 60-second
+ceiling and sometimes went over; three keeps the worst case near 35.
+
+Both sections are fetched concurrently, so a full test is about six parallel rounds
+rather than fourteen sequential ones. Nobody waits on any single request anyway, because
+the pool below covers the opening questions.
+
+A batch may come back **short**. Duplicates are dropped and the rest returned, rather
+than failing the whole request — one repeated question used to throw away four good ones
+and cost another 35-second call. The top-up loop simply asks again for the shortfall.
 
 - **Starter** — one batch per section, fired in parallel, so 10 questions in ~30s. This
   is all she waits for.

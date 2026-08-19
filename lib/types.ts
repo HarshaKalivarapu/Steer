@@ -39,12 +39,18 @@ export const PASS_PER_SECTION = 15
 export const EXAM_SIZE = SECTION_SIZE * 2
 
 /**
- * Questions are generated in small batches, for two reasons. Vercel caps a serverless
- * function at 60 seconds on the Hobby tier, and a measured 5-question batch takes about
- * 27 seconds against roughly 148 for twenty — so five is the size that leaves real
- * headroom rather than a five-second margin. It also means she starts answering sooner.
+ * How many questions one request writes.
+ *
+ * Sized from production timings, which are close to linear in output volume:
+ * about 5 seconds of overhead plus 12ms per output token. Five-question batches
+ * measured 35-55 seconds against Vercel's 60-second ceiling and sometimes went over,
+ * because Opus's thinking tokens count toward output and vary roughly threefold
+ * between otherwise identical requests.
+ *
+ * Three keeps the worst case near 35 seconds. More requests, but the ready pool means
+ * nobody is waiting on any single one of them.
  */
-export const BATCH_SIZE = 5
+export const BATCH_SIZE = 3
 
 /** True once every question has arrived. */
 export function isComplete(exam: Exam): boolean {
@@ -52,19 +58,19 @@ export function isComplete(exam: Exam): boolean {
 }
 
 /**
- * The next batch to request, or null when the test is full. Sections are topped up
- * alternately so a half-finished test still has both kinds to answer.
+ * The batches still needed, at most one per section.
+ *
+ * Both are returned so they can be fetched concurrently. With three questions per
+ * request a full test is fourteen batches, and running them one after another would
+ * take longer than she takes to answer; in parallel it comfortably stays ahead.
  */
-export function nextBatch(exam: Exam): { section: Section; count: number } | null {
+export function nextBatches(exam: Exam): { section: Section; count: number }[] {
   const shortfall = (section: Section) =>
     SECTION_SIZE - exam.questions.filter((q) => q.section === section).length
 
-  const signs = shortfall('signs')
-  const rules = shortfall('rules')
-  if (signs <= 0 && rules <= 0) return null
-
-  const section: Section = signs >= rules ? 'signs' : 'rules'
-  return { section, count: Math.min(BATCH_SIZE, shortfall(section)) }
+  return (['signs', 'rules'] as const)
+    .map((section) => ({ section, count: Math.min(BATCH_SIZE, shortfall(section)) }))
+    .filter((b) => b.count > 0)
 }
 
 export interface SectionScore {
