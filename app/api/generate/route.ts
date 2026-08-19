@@ -8,10 +8,38 @@ import { BATCH_SIZE, LETTERS, type Question, type Section } from '@/lib/types'
 import { SIGN_IDS } from '@/lib/signs'
 import { mockQuestions } from '@/lib/mock'
 
+/*
+  How hard the model thinks before writing.
+
+  Opus 5 defaults to 'high', and production logs showed why that doesn't work here: a
+  3-question batch returned 3,721 output tokens, almost identical to a 5-question batch
+  at 3,952. The questions themselves are only ~700 tokens of JSON — the rest is thinking,
+  and since time tracks output volume at roughly 12ms per token, that thinking was what
+  pushed requests past Vercel's 60-second limit.
+
+  Writing three questions from a fully specified prompt, a 43-question seed bank and the
+  booklet is not a task that needs deep reasoning. If batches still run long, 'low' is
+  the next step; if question quality drops noticeably, 'high' is why.
+*/
+const EFFORT = 'high' as const
+
 export const runtime = 'nodejs'
 // A 5-question batch measures around 27 seconds. 60 is Vercel's Hobby ceiling and
 // leaves better than 2x headroom; going bigger is what would blow the limit.
-export const maxDuration = 60
+/*
+  How long this function is allowed to run.
+
+  This is a request, not a platform constant, and it is what actually produced the
+  "Task timed out after 60 seconds" errors — Vercel was honouring the 60 we asked for,
+  not imposing it. Fluid Compute (the default on new projects) allows 300 across plans
+  and can be configured higher.
+
+  If a deploy is ever rejected for this value, Fluid Compute is switched off on the
+  project: either enable it in Settings > Functions, or set this back to 60. With effort
+  at medium a batch measures around 15 seconds, so 60 is already generous — this is
+  headroom for a slow run, not something the normal path needs.
+*/
+export const maxDuration = 300
 
 const QUESTION_SCHEMA = {
   type: 'object',
@@ -118,9 +146,14 @@ async function generateSection(
 ) {
   const stream = client.beta.messages.stream({
     model: 'claude-opus-5',
-    max_tokens: 24000,
+    // Ample for a 3-question batch, which runs well under 2k tokens of JSON. Kept
+    // bounded so a runaway generation fails fast rather than burning the whole budget.
+    max_tokens: 8000,
     system: SYSTEM_PROMPT,
-    output_config: { format: { type: 'json_schema', schema: QUESTION_SCHEMA } },
+    output_config: {
+      effort: EFFORT,
+      format: { type: 'json_schema', schema: QUESTION_SCHEMA },
+    },
     messages: [
       {
         role: 'user',
@@ -207,7 +240,7 @@ export async function POST(request: Request) {
     const { cacheWrite, cacheRead, out } = batch.usage
     console.log(
       `[generate] ${section} x${count} -> ${keep.length} kept in ${took}ms ` +
-        `— cache write ${cacheWrite}, read ${cacheRead}, out ${out}` +
+        `— effort ${EFFORT}, cache write ${cacheWrite}, read ${cacheRead}, out ${out}` +
         (dropped.length ? ` — dropped ${dropped.length}: ${dropped.join('; ')}` : ''),
     )
 

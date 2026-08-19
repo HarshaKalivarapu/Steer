@@ -2,9 +2,8 @@
  * A/B two models on the exact same question-generation request.
  *
  * Everything is held constant except the model string: same system prompt, same booklet
- * and seed bank, same schema, same count, same max_tokens, no exclusions. Both models
- * default to adaptive thinking at high effort, so those are left untouched too. The runs
- * are sequential so neither is competing for bandwidth with the other.
+ * and seed bank, same schema, same count, same max_tokens, and the same effort level the
+ * app actually ships with. The runs are sequential so neither competes for bandwidth.
  *
  *   npx tsx scripts/compare-models.mts
  */
@@ -18,6 +17,8 @@ import { SIGN_IDS } from '../lib/signs.ts'
 import { LETTERS, type Question } from '../lib/types.ts'
 
 const SECTION = 'rules' as const
+// Both models run at the effort the app actually uses, so this compares what ships.
+const EFFORT = 'medium' as const
 const COUNT = 5
 const MAX_TOKENS = 8000
 const OUT = 'docs/model-comparison.md'
@@ -78,7 +79,7 @@ async function run(client: Anthropic, model: string, reference: string): Promise
     model,
     max_tokens: MAX_TOKENS,
     system: SYSTEM_PROMPT,
-    output_config: { format: { type: 'json_schema', schema: SCHEMA } },
+    output_config: { effort: EFFORT, format: { type: 'json_schema', schema: SCHEMA } },
     messages: [
       {
         role: 'user',
@@ -162,7 +163,7 @@ async function main() {
     '# Model comparison',
     '',
     `Same prompt, same booklet and seed bank, same schema, ${COUNT} \`${SECTION}\` questions,`,
-    `\`max_tokens: ${MAX_TOKENS}\`, no exclusions. Only the model string differs.`,
+    `\`max_tokens: ${MAX_TOKENS}\`, effort \`${EFFORT}\`, no exclusions. Only the model string differs.`,
     '',
     '| model | time | cost | stem words | option words | explanation words |',
     '| --- | --- | --- | --- | --- | --- |',

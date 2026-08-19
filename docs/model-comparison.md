@@ -1,128 +1,128 @@
 # Model comparison
 
 Same prompt, same booklet and seed bank, same schema, 5 `rules` questions,
-`max_tokens: 8000`, no exclusions. Only the model string differs.
+`max_tokens: 8000`, effort `medium`, no exclusions. Only the model string differs.
 
 | model | time | cost | stem words | option words | explanation words |
 | --- | --- | --- | --- | --- | --- |
-| claude-opus-5 | 27s | $0.371 | 15.4 | 3.6 | 14.7 |
-| claude-sonnet-5 | 24s | $0.231 | 18.8 | 3.9 | 10.6 |
+| claude-opus-5 | 19s | $0.380 | 14.0 | 4.7 | 13.3 |
+| claude-sonnet-5 | 18s | $0.233 | 16.4 | 4.8 | 14.4 |
 
 Seed bank targets: stems ~15 words, options ~5 words, explanations ~13 words.
 ## claude-opus-5
 
-27s · $0.371 · stems 15.4 words · options 3.6 words (longest 7) · explanations 14.7 words
+19s · $0.380 · stems 14.0 words · options 4.7 words (longest 8) · explanations 13.3 words
 
-**1. [easy]** Ohio law requires you to turn on your headlights whenever you use your
+**1. [easy]** Ohio law requires your headlights to be on at which of these times?
 
-- A) windshield wipers  ← **correct**
-  - *Correct. Ohio requires headlights any time the wipers are running, since visibility is already reduced.*
-- B) turn signals
-  - *Signals are used constantly in clear daylight, so they have nothing to do with the lighting law.*
-- C) horn
-  - *The horn is a warning device only. Using it never triggers a headlight requirement.*
-- D) emergency flashers
-  - *Flashers warn others of a stopped or slow vehicle; they are not tied to the headlight rule.*
+- A) Between sunset and sunrise
+  - *True, but the manual lists several other required times as well.*
+- B) During rain, snow, or fog
+  - *True, but incomplete. Poor visibility is only one of the listed conditions.*
+- C) Any time the wipers are running
+  - *True, but incomplete. Wiper use is one of several listed triggers.*
+- D) All of the above  ← **correct**
+  - *Correct. Ohio requires lights from sunset to sunrise, in poor visibility, and whenever wipers run for precipitation.*
 
-**2. [medium]** You may not park your vehicle within ________ of a fire hydrant.
+**2. [medium]** You must not park your vehicle within _________ of a fire hydrant.
 
 - A) 5 feet
-  - *Too close. Firefighters would not have room to connect hoses to the hydrant.*
-- B) 20 feet
-  - *Twenty feet is Ohio's distance from a crosswalk or intersection, not from a hydrant.*
-- C) 30 feet
-  - *Thirty feet applies to a stop sign, flashing beacon, or traffic signal instead.*
-- D) 10 feet  ← **correct**
-  - *Correct. Ohio prohibits stopping, standing, or parking within 10 feet of a fire hydrant.*
+  - *Too short. Ohio's stated distance from a hydrant is larger than this.*
+- B) 10 feet  ← **correct**
+  - *Correct. Ohio law prohibits stopping, parking, or standing within 10 feet of a fire hydrant.*
+- C) 20 feet
+  - *Twenty feet is Ohio's distance from an intersection or crosswalk, not a hydrant.*
+- D) 30 feet
+  - *No Ohio parking restriction in the manual uses 30 feet.*
 
-**3. [medium]** You approach a railroad crossing and the red lights begin to flash. Where must you stop?
+**3. [medium]** You are stopped at a railroad crossing while a train approaches. Your vehicle must stop no closer than:
 
-- A) At least 5 feet from the crossing
-  - *Five feet leaves you far too close to a passing train and to lowering gates.*
-- B) Between 15 and 50 feet from it  ← **correct**
-  - *Correct. Ohio requires a stop no closer than 15 feet and no farther than 50 feet.*
-- C) Anywhere behind the crossbuck sign
-  - *The crossbuck marks the tracks but does not set the legal stopping distance.*
-- D) At least 100 feet from the crossing
-  - *One hundred feet is the no-passing distance near a crossing, not the stopping distance.*
+- A) 5 feet from the crossing
+  - *Far too close to the tracks to be safe, and below Ohio's stated minimum.*
+- B) 10 feet from the crossing
+  - *Ten feet is the school bus stopping distance, not the railroad figure.*
+- C) 15 feet from the crossing  ← **correct**
+  - *Correct. Ohio requires stopping no closer than 15 feet and no farther than 50 feet from the crossing.*
+- D) 50 feet from the crossing
+  - *Fifty feet is the farthest you may stop, not the closest.*
 
-**4. [medium]** The traffic signal at a busy intersection is completely dark and no officer is present. You must
+**4. [hard]** Which of the following statements about passing a slow-moving vehicle is FALSE?
 
-- A) proceed without slowing down
-  - *A dark signal controls nothing, so entering at speed means crossing traffic with no protection.*
-- B) treat it as a flashing yellow light
-  - *That would let you roll through. Ohio requires more than caution when the signal is dead.*
-- C) treat it as a four-way stop  ← **correct**
-  - *Correct. Ohio law says drivers must treat a non-working signal as a four-way stop.*
-- D) wait until the signal works again
-  - *Power may be out for hours. The law gives you a way to proceed safely instead.*
+- A) You may exceed the speed limit while passing  ← **correct**
+  - *Correct, this is false. Ohio states you must not exceed the speed limit while passing a slow-moving vehicle.*
+- B) You may cross a solid yellow line
+  - *True. Crossing a solid yellow line is permitted to pass a slow-moving vehicle.*
+- C) The vehicle must travel under half the limit
+  - *True. Ohio allows the pass only if the vehicle moves slower than half the posted speed limit.*
+- D) There must be clear space ahead
+  - *True. Sufficient clear space in the oncoming lane is required before passing.*
 
-**5. [hard]** A driver under 21 years of age can be charged with underage consumption at a BAC of at least
+**5. [hard]** A driver accumulates 12 or more points within two years. What does the BMV do?
 
-- A) .02 percent  ← **correct**
-  - *Correct. Ohio charges drivers under 21 at .02 percent, far below the adult limit.*
-- B) .05 percent
-  - *No Ohio threshold uses .05 percent for any age group of drivers.*
-- C) .08 percent
-  - *That is the limit for drivers 21 and over. Younger drivers are held to a stricter one.*
-- D) .17 percent
-  - *A BAC of .17 percent brings the enhanced penalties for a convicted OVI offender.*
+- A) Sends a warning letter only
+  - *The warning letter is sent at six points, not at twelve.*
+- B) Imposes a license suspension  ← **correct**
+  - *Correct. Twelve or more points in two years brings a 12-point suspension of the Driver License.*
+- C) Requires a new vision screening
+  - *The manual does not list vision screening as a point-suspension reinstatement requirement.*
+- D) Doubles the driver's fines
+  - *Doubled fines apply to work zone speeding, not to point accumulation.*
 
 ## claude-sonnet-5
 
-24s · $0.231 · stems 18.8 words · options 3.9 words (longest 9) · explanations 10.6 words
+18s · $0.233 · stems 16.4 words · options 4.8 words (longest 10) · explanations 14.4 words
 
-**1. [easy]** You may not park within how many feet of a fire hydrant?
+**1. [easy]** You are pulling out of a private driveway onto a public street. Who must you yield to?
 
-- A) 5 feet
-  - *Too close. Ohio requires more clearance so firefighters can connect hoses quickly.*
-- B) 10 feet  ← **correct**
-  - *Correct. Ohio law prohibits parking within 10 feet of a fire hydrant.*
-- C) 15 feet
-  - *Overstates the rule. Ten feet, not fifteen, is the actual Ohio distance.*
-- D) 20 feet
-  - *Much farther than Ohio law requires for hydrant clearance.*
+- A) No one, since you are already moving
+  - *Movement does not grant right-of-way; drivers already on the roadway have priority over you.*
+- B) Only vehicles turning left
+  - *The yield applies to all traffic on the roadway, not just vehicles turning left.*
+- C) Drivers already on the public street  ← **correct**
+  - *Correct. Ohio law requires yielding to traffic on the highway when entering from a driveway or private road.*
+- D) Only vehicles behind you
+  - *Vehicles behind you are not the concern; the danger is traffic already moving on the street you are entering.*
 
-**2. [medium]** You stop at a red light on a one-way street, and the cross street is also one-way. You want to turn left. What should you do?
+**2. [medium]** You see a tow truck stopped on the shoulder with its warning lights flashing. You should:
 
-- A) Stop, then turn left if no sign forbids it  ← **correct**
-  - *Correct. Left on red is allowed only from one one-way street onto another.*
-- B) Wait for a green light always
-  - *Unnecessarily cautious. Ohio permits this specific left turn on red.*
-- C) Turn left only with an officer present
-  - *No officer is needed for this legal left-on-red movement.*
-- D) Turn left without stopping if clear
-  - *A complete stop is always required first, even when the way looks clear.*
+- A) Move over a lane or slow down  ← **correct**
+  - *Correct. Ohio's Move Over law requires changing lanes away from the vehicle, or slowing if a lane change is unsafe.*
+- B) Stop directly behind it
+  - *Stopping in the roadway near a stopped service vehicle creates a hazard rather than avoiding one.*
+- C) Sound your horn and pass at normal speed
+  - *A horn does nothing here, and passing at normal speed ignores the required slow-down or lane change.*
+- D) Flash your headlights and continue at the same speed
+  - *Flashing lights communicates nothing useful; the law requires actually slowing or moving over.*
 
-**3. [medium]** A driver under age 21 can be charged with an offense for a BAC of at least what percentage?
+**3. [hard]** A train is approaching a crossing. How close to the tracks may you stop your vehicle?
 
-- A) 0.08 percent
-  - *That is the adult limit. Drivers under 21 face a much lower threshold.*
-- B) 0.02 percent  ← **correct**
-  - *Correct. Ohio charges underage drivers at BAC levels as low as 0.02 percent.*
-- C) 0.05 percent
-  - *Not the figure Ohio uses for underage drivers.*
-- D) 0.10 percent
-  - *Far above both the adult and underage legal limits.*
+- A) No closer than 5 feet, no farther than 25 feet
+  - *These distances are too short; Ohio's minimum and maximum are both greater.*
+- B) No closer than 15 feet, no farther than 50 feet  ← **correct**
+  - *Correct. Ohio law sets this range so you are clear of the train but close enough to see the crossing.*
+- C) No closer than 30 feet, no farther than 75 feet
+  - *This overstates the required distance from the tracks.*
+- D) Anywhere before the crossbuck sign
+  - *This ignores the specific distance range Ohio law sets for stopping near an approaching train.*
 
-**4. [medium]** The car ahead of you signals a left turn on a two-lane road. May you legally pass it on the right?
+**4. [medium]** What is the maximum legal blood alcohol concentration (BAC) for a driver under age 21 in Ohio?
 
-- A) Yes, if it can be done safely  ← **correct**
-  - *Correct. Passing on the right is allowed when a vehicle ahead is turning left.*
-- B) No, passing on the right is never allowed
-  - *Ohio permits it in specific cases, including this one.*
-- C) Only if the speed limit is under 25
-  - *Speed limit has no bearing on this passing rule.*
-- D) Only after dark
-  - *Time of day is not part of this rule.*
+- A) 0.08%
+  - *This is the limit for drivers 21 and older, not for underage drivers.*
+- B) 0.04%
+  - *This is the limit that applies to commercial drivers, not underage drivers.*
+- C) 0.10%
+  - *This exceeds even the adult limit and is not an Ohio standard.*
+- D) 0.02%  ← **correct**
+  - *Correct. Ohio sets a stricter 0.02% limit for drivers under age 21.*
 
-**5. [hard]** Accumulating how many points within a two-year period leads to an automatic license suspension in Ohio?
+**5. [easy]** You may not stop or park your vehicle within how many feet of a fire hydrant?
 
-- A) 6 points
-  - *Six points only triggers a warning letter, not a suspension.*
-- B) 9 points
-  - *Not an Ohio threshold for any licensing action.*
-- C) 12 points  ← **correct**
-  - *Correct. Twelve or more points in two years results in a six-month suspension.*
-- D) 15 points
-  - *Higher than the actual Ohio suspension threshold.*
+- A) 10 feet  ← **correct**
+  - *Correct. Ohio law prohibits stopping, parking, or standing within 10 feet of a fire hydrant.*
+- B) 20 feet
+  - *20 feet is the distance Ohio sets for intersections and crosswalks, not fire hydrants.*
+- C) 5 feet
+  - *This understates the distance Ohio law actually requires from a fire hydrant.*
+- D) 15 feet
+  - *This is not the distance Ohio's parking law specifies for a fire hydrant.*

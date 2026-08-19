@@ -27,15 +27,22 @@ handing over a broken test.
 
 ### Generated in small batches
 
-Questions arrive three at a time. Production timings are close to linear in output
-volume — about 5 seconds of overhead plus 12ms per output token — and Opus's thinking
-tokens count toward output and vary roughly threefold between otherwise identical
-requests. Five-question batches measured 35-55 seconds against Vercel's 60-second
-ceiling and sometimes went over; three keeps the worst case near 35.
+Questions arrive five at a time, and the model runs at `medium` effort rather than its
+default `high`.
 
-Both sections are fetched concurrently, so a full test is about six parallel rounds
-rather than fourteen sequential ones. Nobody waits on any single request anyway, because
-the pool below covers the opening questions.
+That effort setting is the load-bearing part. Time tracks output volume at roughly 12ms
+per token, and Opus's thinking counts toward output: at `high`, a 3-question batch
+returned 3,721 tokens against 3,952 for five — almost none of the difference was
+questions. Requests were hitting Vercel's 60-second ceiling on thinking alone. At
+`medium` the same batch measured 15s instead of 45s, with 962 output tokens.
+
+Writing five questions from a fully specified prompt, a 43-question seed bank and the
+booklet does not need deep reasoning. If batches ever run long again, `EFFORT` in
+`app/api/generate/route.ts` is the first dial to reach for — `low` is the next step down.
+If question quality drops, that constant is why.
+
+Both sections are fetched concurrently, so a full test is a handful of parallel rounds
+rather than a long sequential chain.
 
 A batch may come back **short**. Duplicates are dropped and the rest returned, rather
 than failing the whole request — one repeated question used to throw away four good ones
@@ -51,9 +58,11 @@ If she catches up to the generator, the Next button reads "Writing the next ques
 rather than pretending the test has ended. A failed batch stops the loop after two
 attempts, so a persistent error can't quietly spend money in the background.
 
-`maxDuration` in the route is set to 60 to match the Hobby ceiling. Raise it if you
-deploy somewhere with a longer limit, but the batch size is what actually keeps requests
-short.
+`maxDuration` in the route is a *request*, not a platform constant. It sat at 60 for a
+while and was itself the cause of the "Task timed out after 60 seconds" errors — Vercel
+was honouring the number we asked for. It is now 300, which Fluid Compute allows across
+plans. If a deploy is rejected for it, Fluid Compute is off on the project: enable it in
+Settings > Functions, or put the value back to 60.
 
 ### The ready pool
 

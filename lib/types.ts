@@ -41,16 +41,16 @@ export const EXAM_SIZE = SECTION_SIZE * 2
 /**
  * How many questions one request writes.
  *
- * Sized from production timings, which are close to linear in output volume:
- * about 5 seconds of overhead plus 12ms per output token. Five-question batches
- * measured 35-55 seconds against Vercel's 60-second ceiling and sometimes went over,
- * because Opus's thinking tokens count toward output and vary roughly threefold
- * between otherwise identical requests.
+ * Batch size turned out not to be the thing that made requests slow. Production logs
+ * showed a 3-question batch returning 3,721 output tokens against 3,952 for five —
+ * nearly all of it thinking, not questions. Lowering the effort level in the route cut a
+ * measured batch from 45s to 15s, which left room to go back to five.
  *
- * Three keeps the worst case near 35 seconds. More requests, but the ready pool means
- * nobody is waiting on any single one of them.
+ * Time still tracks output volume at roughly 12ms per token, so if a future change makes
+ * generations longer this is one of the two dials; effort in the route is the other, and
+ * the more powerful one.
  */
-export const BATCH_SIZE = 3
+export const BATCH_SIZE = 5
 
 /** True once every question has arrived. */
 export function isComplete(exam: Exam): boolean {
