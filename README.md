@@ -66,18 +66,29 @@ Settings > Functions, or put the value back to 60.
 
 ### The ready pool
 
-Waiting half a minute for a button is the worst part of the app, so ten questions are
-kept generated ahead of time in `lib/pool.ts` (localStorage, five per section). Pressing
-Start hands those straight over and the test opens with no wait at all.
+Waiting half a minute for a button is the worst part of the app, so one batch of five
+questions is kept generated ahead of time in `lib/pool.ts` (localStorage). Pressing Start
+hands those over and the test opens with no wait at all.
+
+Five is one request, so the pool refills quickly and little is wasted if she stops taking
+tests. Because a batch is a single section, the section **alternates** on each drain —
+otherwise every test would open with five signs questions in a row.
+
+The pool generates at `medium` effort while the exam itself runs at `high`. The pool only
+has to be ready before she presses Start, so a 15-second refill beats a 45-second one;
+the questions she actually answers get the deliberation that produces better distractors.
+Both levels live in `EFFORT` in `app/api/generate/route.ts`, chosen server-side from a
+`purpose` field so a request can't ask for an arbitrary one.
 
 The moment the pool is drained, `components/PoolWarmer.tsx` refills it — in parallel with
-the batches the running test is fetching. So during a test there are two things in
-flight: the next five questions for *this* test, and the opening questions for the *next*
-one.
+the batches the running test is fetching. It **polls** on a short interval rather than
+reacting to an event, because it sits in the root layout and so never remounts as she
+navigates, while the pool is drained by a different component. An earlier version only
+re-checked after a successful fetch, which meant nothing ever told it the pool had been
+emptied: the first test was instant and every one after it waited for a cold generation.
 
-This is not extra spend. Those ten questions are the next test's first ten, generated
+This is not extra spend. Those five questions are the next test's opening five, generated
 early rather than on demand; only the final prefetch, the one never used, is wasted.
-Only the very first run ever waits.
 
 **Both directions of deduplication matter here.** The pool excludes the test in progress,
 and the test excludes the pool — otherwise a question sitting in the pool could be

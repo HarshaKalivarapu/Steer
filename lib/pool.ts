@@ -16,9 +16,24 @@ import { BATCH_SIZE, type Question, type Section } from './types'
  */
 const KEY = 'ohio-permit-pool'
 
-/** Fixed at five per section, so shrinking the batch size doesn't shrink the pool. */
-export const POOL_PER_SECTION = 5
-export const POOL_SIZE = POOL_PER_SECTION * 2
+/**
+ * One batch's worth. That is a single request, so the pool refills quickly and little is
+ * wasted if she stops taking tests. It also means the pool holds one section only, which
+ * is why the section alternates between fills — otherwise every test would open with
+ * five signs questions in a row.
+ */
+export const POOL_SIZE = BATCH_SIZE
+
+const SECTION_KEY = 'ohio-permit-pool-section'
+
+function nextSection(): Section {
+  if (typeof window === 'undefined') return 'signs'
+  return window.localStorage.getItem(SECTION_KEY) === 'rules' ? 'rules' : 'signs'
+}
+
+function flipSection() {
+  window.localStorage.setItem(SECTION_KEY, nextSection() === 'signs' ? 'rules' : 'signs')
+}
 
 function read(): Question[] {
   if (typeof window === 'undefined') return []
@@ -46,6 +61,8 @@ export function poolIsFull(): boolean {
 export function drainPool(): Question[] {
   const questions = read()
   write([])
+  // The next pool is the other section, so consecutive tests don't open the same way.
+  flipSection()
   return questions
 }
 
@@ -55,18 +72,16 @@ export function addToPool(questions: Question[]) {
   write([...existing, ...questions.filter((q) => !seen.has(q.id))])
 }
 
-/** The next batch the pool is short of, or null when it's full. */
+/**
+ * What the pool still needs, or null when it's full. A partial batch is topped up in the
+ * same section, so the questions she opens with are a coherent set rather than a
+ * leftover mix.
+ */
 export function poolNeeds(): { section: Section; count: number } | null {
   const pool = read()
-  const shortfall = (section: Section) =>
-    POOL_PER_SECTION - pool.filter((q) => q.section === section).length
-
-  const signs = shortfall('signs')
-  const rules = shortfall('rules')
-  if (signs <= 0 && rules <= 0) return null
-
-  const section: Section = signs >= rules ? 'signs' : 'rules'
-  return { section, count: Math.min(BATCH_SIZE, shortfall(section)) }
+  const short = POOL_SIZE - pool.length
+  if (short <= 0) return null
+  return { section: pool[0]?.section ?? nextSection(), count: Math.min(BATCH_SIZE, short) }
 }
 
 /**

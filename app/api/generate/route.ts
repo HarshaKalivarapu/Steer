@@ -9,19 +9,30 @@ import { SIGN_IDS } from '@/lib/signs'
 import { mockQuestions } from '@/lib/mock'
 
 /*
-  How hard the model thinks before writing.
+  How hard the model thinks before writing, which is the single biggest lever on how long
+  a request takes. Time tracks output volume at roughly 12ms per token, and Opus's
+  thinking counts toward output: a batch measured 45s at 'high' against 15s at 'medium',
+  for near-identical questions.
 
-  Opus 5 defaults to 'high', and production logs showed why that doesn't work here: a
-  3-question batch returned 3,721 output tokens, almost identical to a 5-question batch
-  at 3,952. The questions themselves are only ~700 tokens of JSON — the rest is thinking,
-  and since time tracks output volume at roughly 12ms per token, that thinking was what
-  pushed requests past Vercel's 60-second limit.
+  The two callers want different things, so they get different settings:
 
-  Writing three questions from a fully specified prompt, a 43-question seed bank and the
-  booklet is not a task that needs deep reasoning. If batches still run long, 'low' is
-  the next step; if question quality drops noticeably, 'high' is why.
+  - The exam runs at 'high'. These are the questions she actually answers, and the extra
+    deliberation is what produces distractors drawn from real rules misapplied rather
+    than throwaways. Measured 1 hollow distractor in 15 at 'high', versus 3 in 15 for
+    the cheaper model at 'medium'.
+  - The pool runs at 'medium'. It only has to be ready before she presses Start, and a
+    15s refill beats a 45s one for that. It is also the path that runs on a cold start,
+    where speed is the whole point.
+
+  The level is decided here rather than sent by the client, so a request can't ask for
+  an arbitrary one.
 */
-const EFFORT = 'high' as const
+const EFFORT = {
+  exam: 'high',
+  pool: 'medium',
+} as const
+
+type Purpose = keyof typeof EFFORT
 
 export const runtime = 'nodejs'
 // A 5-question batch measures around 27 seconds. 60 is Vercel's Hobby ceiling and
@@ -140,6 +151,7 @@ async function generateSection(
   client: Anthropic,
   section: Section,
   count: number,
+  purpose: Purpose,
   reference: string,
   avoid: string[],
   avoidSigns: string[],
@@ -151,7 +163,7 @@ async function generateSection(
     max_tokens: 8000,
     system: SYSTEM_PROMPT,
     output_config: {
-      effort: EFFORT,
+      effort: EFFORT[purpose],
       format: { type: 'json_schema', schema: QUESTION_SCHEMA },
     },
     messages: [
@@ -197,6 +209,7 @@ export async function POST(request: Request) {
   const started = Date.now()
   let section: Section = 'signs'
   let count = BATCH_SIZE
+  let purpose: Purpose = 'exam'
   let avoid: string[] = []
   let avoidSigns: string[] = []
   let examId = crypto.randomUUID()
@@ -204,6 +217,7 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as Record<string, unknown>
     if (body.section === 'rules') section = 'rules'
+    if (body.purpose === 'pool') purpose = 'pool'
     if (typeof body.count === 'number' && body.count > 0) {
       count = Math.min(Math.floor(body.count), BATCH_SIZE)
     }
@@ -228,7 +242,15 @@ export async function POST(request: Request) {
     const reference = buildSeedPrompt(booklet, seedBank)
 
     const attemptStarted = Date.now()
-    const batch = await generateSection(client, section, count, reference, avoid, avoidSigns)
+    const batch = await generateSection(
+      client,
+      section,
+      count,
+      purpose,
+      reference,
+      avoid,
+      avoidSigns,
+    )
     const took = Date.now() - attemptStarted
 
     const withIds: Question[] = batch.questions.map((q, i) => ({
@@ -240,7 +262,7 @@ export async function POST(request: Request) {
     const { cacheWrite, cacheRead, out } = batch.usage
     console.log(
       `[generate] ${section} x${count} -> ${keep.length} kept in ${took}ms ` +
-        `— effort ${EFFORT}, cache write ${cacheWrite}, read ${cacheRead}, out ${out}` +
+        `— ${purpose}/${EFFORT[purpose]}, cache write ${cacheWrite}, read ${cacheRead}, out ${out}` +
         (dropped.length ? ` — dropped ${dropped.length}: ${dropped.join('; ')}` : ''),
     )
 
@@ -253,7 +275,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ questions: keep })
   } catch (e) {
     const detail = e instanceof Error ? e.message : 'Unknown error'
-    console.log(`[generate] ${section} x${count} FAILED after ${Date.now() - started}ms — ${detail}`)
+    console.log(
+      `[generate] ${section} x${count} ${purpose} FAILED after ${Date.now() - started}ms — ${detail}`,
+    )
     return new NextResponse(`Could not generate questions. ${detail}`, { status: 500 })
   }
 }

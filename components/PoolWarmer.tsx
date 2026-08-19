@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { findRepeatsOf } from '@/lib/dedup'
-import { addToPool, poolNeeds, poolPrompts, poolSignIds } from '@/lib/pool'
+import { POOL_SIZE, addToPool, getPool, poolNeeds, poolPrompts, poolSignIds } from '@/lib/pool'
 import { listExams, recentPrompts, recentSignIds } from '@/lib/storage'
 import type { Question } from '@/lib/types'
 
@@ -13,50 +13,74 @@ import type { Question } from '@/lib/types'
  * fetches its next batch, this fetches the next test's opening batch in parallel, so
  * pressing Start is instant every time after the first.
  *
+ * It polls rather than reacting to events, and that is deliberate. This component sits in
+ * the root layout, so it never remounts as she moves between pages, and the pool is
+ * drained by a different component entirely. An earlier version only re-checked after a
+ * successful fetch, which meant that once the home page emptied the pool nothing ever
+ * told this component to refill it — the first test was instant and every one after it
+ * waited.
+ *
  * Renders nothing.
  */
+
+/** How often to look at the pool. Cheap: it only reads localStorage. */
+const CHECK_INTERVAL_MS = 4000
+
+/**
+ * Consecutive attempts that produce nothing before giving up. An attempt is unproductive
+ * if the request failed, or if everything it returned collided with the running test.
+ * Without this, a batch that is fully screened out would be re-requested forever, and
+ * every one of those requests is billed.
+ */
+const MAX_BARREN_ATTEMPTS = 3
+
 export default function PoolWarmer() {
-  const [tick, setTick] = useState(0)
   const inFlight = useRef(false)
-  /** Bounded, so a persistent failure can't quietly spend money in a loop. */
-  const failures = useRef(0)
+  const barren = useRef(0)
+  const lastSize = useRef(-1)
 
   useEffect(() => {
-    if (inFlight.current || failures.current >= 2) return
-    const need = poolNeeds()
-    if (!need) return
+    let cancelled = false
 
-    /*
-      Exclusions come from three places: the tests she has already taken, whatever is
-      already in the pool, and any test currently in progress. That last one matters —
-      the running test is still generating questions, and without it the pool could be
-      handed a question she is about to see.
-    */
-    const live = listExams().find((e) => !e.completedAt)?.questions ?? []
-    const avoid = [
-      ...recentPrompts(),
-      ...poolPrompts(),
-      ...live.filter((q) => q.signId === 'none').map((q) => q.prompt),
-    ]
-    const avoidSigns = [
-      ...recentSignIds(),
-      ...poolSignIds(),
-      ...live.filter((q) => q.signId !== 'none').map((q) => q.signId),
-    ]
+    async function check() {
+      if (cancelled || inFlight.current) return
 
-    inFlight.current = true
-    fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        section: need.section,
-        count: need.count,
-        examId: 'pool',
-        avoid,
-        avoidSigns,
-      }),
-    })
-      .then(async (res) => {
+      const size = getPool().length
+
+      // A drop in pool size means a test just started. Give the refill a fresh budget,
+      // so an earlier bad run can't leave the pool permanently cold.
+      if (size < lastSize.current) barren.current = 0
+      lastSize.current = size
+
+      if (size >= POOL_SIZE || barren.current >= MAX_BARREN_ATTEMPTS) return
+      const need = poolNeeds()
+      if (!need) return
+
+      /*
+        Exclusions come from three places: tests already taken, whatever is already in
+        the pool, and any test currently in progress. That last one matters — the running
+        test is still generating, and without it the pool could be handed a question she
+        is about to see.
+      */
+      const live = listExams().find((e) => !e.completedAt)?.questions ?? []
+      const avoid = [
+        ...recentPrompts(),
+        ...poolPrompts(),
+        ...live.filter((q) => q.signId === 'none').map((q) => q.prompt),
+      ]
+      const avoidSigns = [
+        ...recentSignIds(),
+        ...poolSignIds(),
+        ...live.filter((q) => q.signId !== 'none').map((q) => q.signId),
+      ]
+
+      inFlight.current = true
+      try {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ ...need, purpose: 'pool', examId: 'pool', avoid, avoidSigns }),
+        })
         if (!res.ok) throw new Error(await res.text())
         const { questions } = (await res.json()) as { questions: Question[] }
 
@@ -77,19 +101,29 @@ export default function PoolWarmer() {
             : !currentSigns.has(q.signId),
         )
 
-        addToPool(safe)
-        failures.current = 0
-        setTick((n) => n + 1) // fetch the next batch, if the pool is still short
-      })
-      .catch(() => {
-        // Nothing is shown for this. It's a background nicety, and a failure just means
-        // the next test is generated the slow way.
-        failures.current += 1
-      })
-      .finally(() => {
+        if (safe.length > 0) {
+          addToPool(safe)
+          lastSize.current = getPool().length
+          barren.current = 0
+        } else {
+          barren.current += 1
+        }
+      } catch {
+        // Nothing is surfaced for this. It's a background nicety, and a failure only
+        // means the next test is generated the slow way.
+        barren.current += 1
+      } finally {
         inFlight.current = false
-      })
-  }, [tick])
+      }
+    }
+
+    void check()
+    const timer = setInterval(check, CHECK_INTERVAL_MS)
+    return () => {
+      cancelled = true
+      clearInterval(timer)
+    }
+  }, [])
 
   return null
 }
